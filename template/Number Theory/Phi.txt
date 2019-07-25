@@ -1,0 +1,13 @@
+int phi[1000105];
+void PHI(){
+    phi[1]=0;
+    for(int i=2;i<=1000100;i++)phi[i]=i;
+    for(int i=2;i<=1000100;i++){
+        if(phi[i]==i){
+            phi[i]--;
+            for(int j=i+i;j<=1000100;j+=i){
+                phi[j]=(phi[j]/i)*(i-1);
+            }
+        }
+    }
+}

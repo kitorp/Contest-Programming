@@ -1,0 +1,66 @@
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+
+using namespace std;
+
+int f[1000007];
+
+void failure_function(char *pattern)
+{
+    f[0] = 0;
+    int k = 1, len = 0, len_p = strlen(pattern);
+
+    while (k < len_p)
+    {
+        if (pattern[k] == pattern[len])f[k++] = ++len;
+        else
+        {
+            if (len)len = f[len - 1];
+            else f[k++] = 0;
+        }
+
+    }
+    return;
+}
+
+void KMP_match(char *txt, char*pattern)
+{
+    int i = 0, j = 0, ret = -1;
+    int len_t = strlen(txt), len_p = strlen(pattern);
+
+    while (i < len_t)
+    {
+        if (txt[i] == pattern[j])
+        {
+            i++; j++;
+            if (j == len_p)
+            {
+                ret = i - len_p;
+                printf("A match found from index %d\n", ret);
+                j = f[j - 1];
+            }
+        }
+        else
+        {
+            if (j)j = f[j - 1];
+            else i++;
+        }
+    }
+}
+
+int main()
+{
+    int tc, t = 0;
+    scanf("%d\n", &tc);
+    while (tc--)
+    {
+        char TXT[ 1000007], PT[1000007];
+        gets(TXT);
+        gets(PT);
+
+        failure_function(PT);
+        
+        KMP_match(TXT, PT);
+    }
+}

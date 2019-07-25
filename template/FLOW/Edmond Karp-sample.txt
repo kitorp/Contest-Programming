@@ -1,0 +1,130 @@
+#include<bits/stdc++.h>
+using namespace std;
+int nodes[215],M;
+int cap[215][215];
+int p[215];
+vector<int> G[215];
+int Back_Track(int src, int sink){
+    int parent=p[sink];
+    M=min(M, cap[parent][sink]);
+    if(parent==src){
+        cap[parent][sink]-=M;
+        cap[sink][parent]+=M;
+        return M;
+    }
+    int ret=Back_Track(src,parent);
+    cap[parent][sink]-=M;
+    cap[sink][parent]+=M;
+    return M;
+}
+
+int Find_Aug_Path(int src, int sink){
+    queue<int> Q;
+    p[src]=src;
+    Q.push(src);
+    while(!Q.empty()){
+        int nsrc=Q.front();
+        Q.pop();
+        int sz=G[nsrc].size();
+        for(int i=0;i<sz;i++){
+            int v=G[nsrc][i];
+            if(p[v]==-1 && cap[nsrc][v]>0){
+                p[v]=nsrc;
+                Q.push(v);
+                if(v==sink){
+                    M=1<<30;
+                    Back_Track(src,sink);
+                    return M;
+                }
+            }
+        }
+    }
+    return 0;
+
+}
+
+int Edmonds_karp(int src, int sink){
+    memset(p,-1,sizeof(p));
+    int ans=0;
+    int tmp=Find_Aug_Path(src, sink);
+    ans+=tmp;
+    while(tmp!=0){
+        memset(p,-1,sizeof p);
+        tmp=Find_Aug_Path(src,sink);
+        ans+=tmp;
+    }
+    return ans;
+}
+vector< pair<char,int> > mv;
+int n,dis;
+bool f(int mid){
+    for(int i=0;i<215;i++) G[i].clear();
+    memset(cap,0,sizeof cap);
+    for(int i=0;i<mv.size();i++){
+        char ch=mv[i].first;
+        if(ch=='S') cap[i][i+105]=1;
+        else cap[i][i+105]=100000;
+        G[i].push_back(i+105);
+        G[i+105].push_back(i);
+    }
+    for(int i=0;i<mv.size();i++){
+        int a=mv[i].second;
+        if(a<=mid){
+            G[0].push_back(i);
+            G[i].push_back(0);
+            cap[0][i]=100000;
+        }
+        if(dis-a<=mid){
+            G[n+1].push_back(i+105);
+            G[i+105].push_back(n+1);
+            cap[i+105][n+1]=100000;
+        }
+        for(int j=i+1;j<mv.size();j++){
+            int b=mv[j].second;
+            if(b-a<=mid){
+                G[i+105].push_back(j);
+                G[j].push_back(i+105);
+                cap[i+105][j]=10000;
+
+            }
+        }
+    }
+    if(mid==dis){
+        G[0].push_back(n+1);
+        G[n+1].push_back(0);
+        cap[0][n+1]=100000;
+    }
+    int src=0,sink=n+1;
+    int xx=Edmonds_karp(src, sink);
+    if(xx>1) return 1;
+    else return 0;
+}
+int main()
+{
+
+    int T;
+    cin>>T;
+    for(int t_c=1;t_c<=T;t_c++){
+        int m,a,b;
+        mv.clear();
+        cin>>n>>dis;
+        char ch1,ch2;
+        for(int i=1;i<=n;i++){
+            cin>>ch1>>ch2>>a;
+            mv.push_back(make_pair(ch1,a));
+        }
+
+        int low=0, high=dis;
+        while(low<high){
+            int mid=(low+high)/2;
+            if(f(mid)){
+                high=mid;
+            }
+            else low=mid+1;
+
+        }
+        cout<<"Case "<<t_c<<": "<<low<<"\n";
+    }
+
+    return 0;
+}

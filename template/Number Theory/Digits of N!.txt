@@ -1,0 +1,4 @@
+Let, Number of Digits D
+D=floor[log10(N!)]+1
+ =floor[log10(1x2x3x…………xN)]+1
+ =floor[log10(1) + log10(2) + ……………+log10(N)]+1 

@@ -1,0 +1,67 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define scan(a) scanf("%lld",&a)
+#define scan2(a,b) scan(a);scan(b)
+#define scan3(a,b,c) scan(a);scan(b);scan(c)
+#define m_p make_pair
+#define eps 1e-9
+#define ll long long
+#include<stdio.h>
+
+#define N 46656
+#define RNG 100032
+unsigned status[N/64], prime[4830], nPrime=0;
+bool segment[RNG];
+#define CHK(n) (status[n>>6] &(1<<((n>>1)&31)))
+#define SET(n) (status[n>>6]|=(1<<((n>>1)&31)))
+
+void sieve()
+{
+    prime[nPrime++]=2;
+    for(long long i=3; i<N; i+=2)
+    {
+        if(!CHK(i))
+        {
+            prime[nPrime++] = i;
+            for(long long j=i*i; j<N; j+=(i<<1))
+                SET(j);
+        }
+    }
+}
+int segmented_sieve(int a, int b)
+{
+    int cnt = (a<=2 && 2<=b)? 1 : 0;
+    if(a<3) a=3;
+    if(a%2==0) a++;
+    for(int i=1; prime[i]*prime[i]<=b && i<nPrime; i++)
+    {
+        unsigned j;
+        if(a%prime[i]) j = a-a%prime[i]+prime[i];
+        else j = a;
+        if(j%2==0) j += prime[i];
+        for(   ; j<=b; j+=(prime[i]<<1))
+            if(j!=prime[i])
+                segment[j-a]=1;
+    }
+    for(int i=0; i<=b-a; i+=2)
+    {
+        if(!segment[i])
+            cnt++;
+        segment[i]=0;
+    }
+    return cnt;
+}
+
+int main()
+{
+    sieve();
+    int T, t=1;
+    scanf("%d", &T);
+    while(T--)
+    {
+        int a, b;
+        scanf("%d %d", &a, &b);
+        printf("Case %d: %d\n", t++, segmented_sieve(a,b));
+    }
+    return 0 ;
+}

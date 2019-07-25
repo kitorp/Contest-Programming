@@ -1,0 +1,15 @@
+#define N 46656
+unsigned status[N/64], prime[4830], nPrime=0;
+#define CHK(n) (status[n>>6] &(1<<((n>>1)&31)))
+#define SET(n) (status[n>>6]|=(1<<((n>>1)&31)))
+
+void sieve(){
+    prime[nPrime++]=2;
+    for(long long i=3; i<N; i+=2){
+        if(!CHK(i)){
+            prime[nPrime++] = i;
+            for(long long j=i*i; j<N; j+=(i<<1))
+                SET(j);
+        }
+    }
+}

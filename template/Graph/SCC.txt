@@ -1,0 +1,48 @@
+#define graph_size 100001
+
+vector<int> G[graph_size],RG[graph_size];
+vector<int> components[graph_size];
+stack<int> st;
+bool vis[graph_size];
+int mark;
+
+void dfs(int u)
+{
+
+    vis[u]=1;
+    for(int i=0;i<G[u].size();i++){
+        int v=G[u][i];
+        if(!vis[v]) dfs(v);
+    }
+    st.push(u);
+    return ;
+}
+void dfs2(int u,int mark){
+    components[mark].push_back(u);
+    vis[u]=1;
+    for(int i=0;i<RG[u].size();i++){
+        int v=RG[u][i];
+        if(!vis[v]) dfs2(v,mark);
+    }
+    return ;
+}
+void SCC(int n){
+    while(!st.empty()) st.pop();
+    for(int i=0;i<=n;i++) components[i].clear();
+    mark=0;
+    memset(vis,0,sizeof vis);
+
+    for(int i=1;i<=n;i++){
+        if(!vis[i]) dfs(i);
+    }
+
+    memset(vis,0,sizeof vis);
+    while(!st.empty()){
+        int u=st.top();
+        st.pop();
+        if(!vis[u]){
+            dfs2(u,mark);
+            mark++;
+        }
+    }
+}

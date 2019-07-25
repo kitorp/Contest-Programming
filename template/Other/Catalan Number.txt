@@ -1,0 +1,26 @@
+#define MP 1000010
+#define mod 100000007
+long long cat[MP];
+long long fac[2*MP];
+
+long long mod_pow(int n, int m = (mod - 2)){
+    long long ans = 1;
+    for(long long base = n ; m ; m>>=1){
+        if(m&1) ans = (ans * base)%mod;
+        base = (base * base)%mod;
+    }
+    return ans;
+}
+
+void fill_cat(){
+
+    fac[0] = fac[1] = 1;
+    for(int i = 2; i < 2*MP; ++i) fac[i] = (i*fac[i-1])%mod;
+    cat[0] = cat[1] = 1;
+    for(int i = 2; i < MP; ++i){
+        cat[i] = fac[2*i];
+        long long tmp = (fac[i+1]*fac[i]) % mod;
+        tmp = mod_pow(tmp);
+        cat[i] = (cat[i]*tmp)%mod;
+    }
+}

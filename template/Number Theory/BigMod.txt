@@ -1,0 +1,12 @@
+long long bigmod(long long B,long long P,long long MOD)
+{
+    long long R=1;
+    while(P>0){
+        if(P%2==1){
+            R=(R*B)%MOD;
+        }
+        P/=2;
+        B=(B*B)%MOD;
+    }
+    return R;
+}

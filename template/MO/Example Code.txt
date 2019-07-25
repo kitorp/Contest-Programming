@@ -1,0 +1,122 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+int n,q;
+ll ara[100005];
+int block=300;
+struct node{
+    int l,r,k,id;
+    bool operator < (const node &p ) const{
+        if(l/block==p.l/block){
+            return r<p.r;
+        }
+        else return l/block < p.l/block;
+    }
+
+};
+vector< node> queries;
+ll ans[100005];
+ll L,R;
+int freq[1000006];
+int numbers[1000006];
+
+
+void add(int pos)
+{
+    ++freq[++numbers[ara[pos]]];
+}
+void remove(int pos)
+{
+    freq[numbers[ara[pos]]--]--;
+}
+ll MO(int pos){
+
+    while(R!=queries[pos].r){
+
+        if(R<queries[pos].r){
+            R++;
+            add(R);
+        }
+        else{
+            remove(R);
+            R--;
+        }
+    }
+    while(L!=queries[pos].l){
+        if(L<queries[pos].l){
+            remove(L);
+            L++;
+
+        }
+        else{
+            L--;
+            add(L);
+        }
+
+    }
+    return freq[queries[pos].k];
+}
+
+/*
+ll MO(int pos){
+
+    while(R!=queries[pos].r){
+
+        if(R<queries[pos].r){
+            numbers[ara[++R]]++;
+            freq[numbers[ara[R]]]++;
+        }
+        else{
+            freq[numbers[ara[R]]]--;
+            numbers[ara[R--]]--;
+        }
+    }
+    while(L!=queries[pos].l){
+        if(L<queries[pos].l){
+            freq[numbers[ara[L]]]--;
+            numbers[ara[L++]]--;
+
+        }
+        else{
+            numbers[ara[--L]]++;
+            freq[numbers[ara[L]]]++;
+        }
+
+    }
+    return freq[queries[pos].k];
+}
+*/
+int input[100005];
+int main()
+{
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    int T;
+    cin>>T;
+    for(int tc=1;tc<=T;tc++){
+        cin>>n>>q;
+        L=1,R=0;
+        memset(numbers,0,sizeof numbers);
+        memset(freq,0,sizeof freq);
+        for(int i=1;i<=n;i++) cin>>input[i];
+        int id=1;
+        input[0]=-1;
+        for(int i=1;i<=n;i++){
+            if(input[i]!=input[i-1]) ara[i]=id++;
+            else ara[i]=ara[i-1];
+
+        }
+        node temp;
+        queries.clear();
+        for(int i=0;i<q;i++){
+            cin>>temp.l>>temp.r>>temp.k;
+            temp.id=i;
+            queries.push_back(temp);
+        }
+        sort(queries.begin(),queries.end());
+        for(int i=0;i<q;i++) ans[queries[i].id]=MO(i);
+        for(int i=0;i<q;i++) cout<<ans[i]<<"\n";
+    }
+}
+
+
